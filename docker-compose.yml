@@ -1,0 +1,27 @@
+services:
+  frigate:
+    container_name: frigate
+    privileged: true
+    restart: always
+    image: ghcr.io/blakeblackshear/frigate:stable
+    shm_size: "384mb"
+    devices:
+      - /dev/dri/renderD128
+    volumes:
+      - ${MOUNT_ROOT}/frigate/config:/config
+      - ${MOUNT_ROOT_MEDIA}/frigate/media:/media/frigate
+      - /etc/localtime:/etc/localtime:ro
+      - type: tmpfs
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    ports:
+      - "5000:5000"
+      - "8554:8554"
+      - "8555:8555/tcp"
+      - "8555:8555/udp"
+    environment:
+      FRIGATE_RTSP_PASSWORD: ${RTSP_PASSWORD}
+      LIBVA_DRIVER_NAME: "i965"
